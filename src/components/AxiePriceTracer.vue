@@ -3,7 +3,7 @@
     <template v-for="axie in axies">
       <v-col cols="2" v-if="axie" :key="axie.index">
         <v-card elevation="2">
-          <a :href="axie.href">
+          <a :href="axie.href" :id="'a_'+axie.configId" target="_blank">
             <v-img :src="axie.src"></v-img>
           </a>
           <v-divider></v-divider>
@@ -24,7 +24,7 @@
           DIFF:{{ axie.diff }}%
           <v-divider></v-divider>
           TOTAL:{{ axie.total }}
-          <div :id="axie.configId"></div>
+          <div :id="axie.configId" style="height: 250px"></div>
         </v-card>
       </v-col>
     </template>
@@ -88,7 +88,7 @@ export default {
         this.socket.onopen = function () {
           console.log("websocket open");
           // 保证重连后也会提醒
-          this.map = new Map();
+          _this.map = new Map();
         };
         this.socket.onmessage = function (msg) {
           let jsonData = _this.tryParse(msg.data);
@@ -119,12 +119,39 @@ export default {
             _vue.set(currentAxie, 'total', axie.total);
           } else
             _vue.set(_this.axies, configId, axie);
-          // if (!_this.configDatetimeMap.get(configId) || new Date() - _this.configDatetimeMap.get(configId) > 60000) {
-          //   let chart = _this.$echarts.init(document.getElementById(configId));
-          //   _this.option.series[0].data = jsonData.data.avgPrices
-          //   _this.option && chart.setOption(_this.option)
-          //   _this.configDatetimeMap.set(configId, new Date())
-          // }
+          let chartDiv = document.getElementById(configId);
+          if (chartDiv) {
+            if (!_this.configDatetimeMap.get(configId) || new Date() - _this.configDatetimeMap.get(configId) > 60000) {
+              _this.$echarts.dispose(chartDiv)
+              let chart = _this.$echarts.init(chartDiv);
+              _this.option.series[0].data = jsonData.data.avgPrices
+              _this.option && chart.setOption(_this.option)
+              _this.configDatetimeMap.set(configId, new Date())
+            }
+          }
+          // 记录日志和播放语音
+          let count = _this.map.get(jsonData.data.axies[0].id)
+          _this.map.set(jsonData.data.axies[0].id, count ? count + 1 : 1)
+          if (_this.map.get(jsonData.data.axies[0].id) <= 1) {
+            let audio;
+            if (axie.diff/100 >= _this.threshold[0]) {
+              console.log(jsonData.data.tag)
+              console.log('avg:' + jsonData.data.avgPrices[11]);
+              console.log('cur:' + axie.currentPrices[0] / 1e18);
+              console.log('diff:' + axie.diff + '%')
+              console.log('total:' + jsonData.data.total);
+              console.log('https://marketplace.axieinfinity.com/axie/' + jsonData.data.axies[0].id);
+              document.getElementById('a_' + configId).click();
+              if (axie.diff / 100 >= _this.threshold[2]) {
+                audio = new Audio(require('../assets/mp3/1000000.mp3'));
+              } else if (axie.diff / 100 >= _this.threshold[1]) {
+                audio = new Audio(require('../assets/mp3/10000.mp3'));
+              } else {
+                audio = new Audio(require('../assets/mp3/1.mp3'));
+              }
+              audio.play();
+            }
+          }
         };
         this.socket.onclose = function () {
           console.log("websocket close");

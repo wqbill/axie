@@ -94,6 +94,41 @@
 <script>
   export default {
     name: 'HelloWorld',
+    mounted() {
+      const abi = [
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "name": "_bidAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "_listingIndex",
+              "type": "uint256"
+            },
+            {
+              "name": "_listingState",
+              "type": "uint256"
+            }
+          ],
+          "name": "settleAuction",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+      console.log(abi)
+    },
 
     data: () => ({
       ecosystem: [

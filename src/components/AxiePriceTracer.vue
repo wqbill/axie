@@ -32,8 +32,6 @@
 </template>
 
 <script>
-// import {Decimal} from "decimal";
-
 import Vue from "vue";
 
 export default {
@@ -145,7 +143,7 @@ export default {
               console.log('diff:' + axie.diff + '%')
               console.log('total:' + jsonData.data.total);
               console.log('https://marketplace.axieinfinity.com/axie/' + jsonData.data.axies[0].id);
-              document.getElementById('a_' + configId).click();
+              // document.getElementById('a_' + configId).click();
               if (axie.diff / 100 >= _this.threshold[2]) {
                 audio = new Audio(require('../assets/mp3/1000000.mp3'));
               } else if (axie.diff / 100 >= _this.threshold[1]) {

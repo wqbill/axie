@@ -4,6 +4,8 @@
       <router-link to="/">home</router-link>
       <br>
       <router-link to="/axie">axie</router-link>
+      <br>
+      <router-link to="/axie">config</router-link>
     </v-navigation-drawer>
 
     <!--<v-app-bar app></v-app-bar>-->

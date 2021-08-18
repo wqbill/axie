@@ -76,6 +76,10 @@ export default {
   mounted() {
     this.openSocket();
   },
+  destroyed() {
+    // 避免刷新页面连接多个websocket
+    this.socket.close();
+  },
   methods: {
     openSocket() {
       let _vue = Vue;
@@ -134,7 +138,7 @@ export default {
           _this.map.set(jsonData.data.axies[0].id, count ? count + 1 : 1)
           if (_this.map.get(jsonData.data.axies[0].id) <= 1) {
             let audio;
-            if (axie.diff/100 >= _this.threshold[0]) {
+            if (axie.diff / 100 >= _this.threshold[0]) {
               console.log(jsonData.data.tag)
               console.log('avg:' + jsonData.data.avgPrices[11]);
               console.log('cur:' + axie.currentPrices[0] / 1e18);
